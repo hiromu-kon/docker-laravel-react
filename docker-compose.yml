@@ -1,0 +1,57 @@
+version: '3.8'
+
+volumes:
+  mysql-volume:
+
+services:
+  front:
+    build:
+      context: .
+      dockerfile: ./.docker/dev/front/Dockerfile
+    ports:
+      - ${FRONT_PORT}:3000
+    volumes:
+      - ./frontend:/app:cached
+    stdin_open: true
+    tty: true
+    depends_on:
+      - nginx
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./.docker/dev/nginx/Dockerfile
+    ports:
+      - ${WEB_PORT}:80
+    volumes:
+      - ./backend/:/app:cached
+    tty: true
+    depends_on:
+      - api
+
+  api:
+    build:
+      context: .
+      dockerfile: ./.docker/dev/api/Dockerfile
+    volumes:
+      - ./backend/:/app:cached
+    tty: true
+    environment:
+      - APP_ENV=development
+    depends_on:
+      - db
+
+  db:
+    build:
+      context: .
+      dockerfile: ./.docker/dev/mysql/Dockerfile
+    ports:
+      - ${DB_PORT}:3306
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      TZ: 'Asia/Tokyo'
+    volumes:
+      - mysql-volume:/var/lib/mysql
