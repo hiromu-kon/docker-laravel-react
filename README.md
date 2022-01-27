@@ -5,20 +5,20 @@
 * backend(api): PHP / Laravel
 
 ## clone
-```
-git clone 
+```sh
+git clone https://github.com/hiromu-kon/docker-laravel-react.git
 ```
 
 ## 環境構築
 
 ### コンテナ起動
-```
+```sh
 cp .env.example .env
 docker-compose up -d --build
 ```
 
 ### Laravelインストール
-```
+```sh
 docker-compose exec api composer install
 docker-compose exec api cp .env.example .env
 docker-compose exec api php artisan key:generate
